@@ -1,0 +1,45 @@
+services:
+  glowcartdb:
+    build: 
+      context: ./docker_files/sql/
+    container_name: db
+    ports:
+      - "3306:3306"
+    volumes:
+      - glowcartdbdata:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=yash
+
+  cartcache01:
+    image: memcached
+    container_name: cache01
+    ports:
+      - "11211:11211"
+
+  rmq01:
+    image: rabbitmq
+    ports:
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  glowcartapp:
+    build:
+      context: ./docker_files/tomcat/
+    container_name: glowcartapp
+    ports:
+      - "8080:8080"
+    volumes:
+      - glowcartappdata:/usr/local/tomcat/webapps
+
+  vproweb:
+    build:
+      context: ./docker_files/nginx/
+    container_name: glowcartweb
+    ports:
+      - "80:80"
+
+volumes:
+  glowcartdbdata: {}
+  glowcartappdata: {}
